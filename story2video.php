@@ -3,7 +3,7 @@
 Plugin Name: Story2Video
 Description: Export Google Web Stories to video format.
 Version: 1.0
-Author: Your Name
+Author: Angel Cee
 */
 function story2video_enqueue_scripts() {
     wp_enqueue_script('story2video-script', plugin_dir_url(__FILE__) . 'js/story2video.js', array('jquery'), null, true);

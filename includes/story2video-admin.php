@@ -1,19 +1,10 @@
-<?php
-// Add a menu item for the plugin
-add_action('admin_menu', 'story2video_admin_menu');
-
-function story2video_admin_menu() {
-    add_menu_page(
-        'Story2Video',
-        'Story2Video',
-        'manage_options',
-        'story2video',
-        'story2video_admin_page',
-        'dashicons-video-alt3'
-    );
-}
-
 function story2video_admin_page() {
+    if (isset($_GET['export_success'])) {
+        echo '<div class="notice notice-success is-dismissible"><p>Export successful!</p></div>';
+    } elseif (isset($_GET['export_error'])) {
+        echo '<div class="notice notice-error is-dismissible"><p>Export failed. Please try again.</p></div>';
+    }
+
     $stories = get_posts(array('post_type' => 'web-story', 'numberposts' => -1));
     ?>
     <div class="wrap">

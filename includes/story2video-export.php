@@ -7,8 +7,10 @@ function story2video_export() {
         wp_die('Unauthorized user');
     }
 
-    // Get the story ID
+    // Get the inputs
     $story_id = intval($_POST['story_id']);
+    $format = sanitize_text_field($_POST['format']);
+    $resolution = sanitize_text_field($_POST['resolution']);
 
     // Get the story content
     $story = get_post($story_id);
@@ -18,14 +20,37 @@ function story2video_export() {
         // For example, use FFmpeg to convert the story to video
 
         $story_content = apply_filters('the_content', $story->post_content);
-        $output_file = plugin_dir_path(__FILE__) . "exports/story_$story_id.mp4";
+        $output_file = plugin_dir_path(__FILE__) . "exports/story_$story_id.$format";
+
+        // Determine FFmpeg resolution settings
+        $resolution_option = '';
+        switch ($resolution) {
+            case '1080p':
+                $resolution_option = '-vf scale=1920:1080';
+                break;
+            case '720p':
+                $resolution_option = '-vf scale=1280:720';
+                break;
+            case '480p':
+                $resolution_option = '-vf scale=854:480';
+                break;
+            default:
+                $resolution_option = '-vf scale=1280:720';
+                break;
+        }
 
         // Command to render video using FFmpeg (example)
-        $command = "ffmpeg -i $story_content -c:v libx264 -c:a aac $output_file";
-        shell_exec($command);
+        $command = "ffmpeg -i $story_content $resolution_option -c:v libx264 -c:a aac $output_file 2>&1";
+        $output = shell_exec($command);
 
-        wp_redirect(admin_url('admin.php?page=story2video&export_success=1'));
-        exit;
+        // Error handling
+        if (strpos($output, 'Error') !== false) {
+            wp_redirect(admin_url('admin.php?page=story2video&export_error=1'));
+            exit;
+        } else {
+            wp_redirect(admin_url('admin.php?page=story2video&export_success=1'));
+            exit;
+        }
     } else {
         wp_redirect(admin_url('admin.php?page=story2video&export_error=1'));
         exit;

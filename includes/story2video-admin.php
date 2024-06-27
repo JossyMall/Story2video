@@ -26,8 +26,28 @@ function story2video_admin_page() {
                     <option value="<?php echo $story->ID; ?>"><?php echo $story->post_title; ?></option>
                 <?php endforeach; ?>
             </select>
+
+            <label for="format">Select Video Format:</label>
+            <select name="format" id="format">
+                <option value="mp4">MP4</option>
+                <option value="avi">AVI</option>
+                <option value="mkv">MKV</option>
+            </select>
+
+            <label for="resolution">Select Resolution:</label>
+            <select name="resolution" id="resolution">
+                <option value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="480p">480p</option>
+            </select>
+
             <?php submit_button('Export to Video'); ?>
         </form>
+
+        <div id="export-progress" style="display: none;">
+            <p>Exporting...</p>
+            <progress id="progress-bar" max="100" value="0"></progress>
+        </div>
     </div>
     <?php
 }

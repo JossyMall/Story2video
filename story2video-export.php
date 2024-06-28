@@ -12,6 +12,9 @@ function story2video_export() {
     $format = sanitize_text_field($_POST['format']);
     $resolution = sanitize_text_field($_POST['resolution']);
 
+    // Get the FFmpeg path from settings
+    $ffmpeg_path = get_option('story2video_ffmpeg_path', 'ffmpeg');
+
     // Get the story content
     $story = get_post($story_id);
 
@@ -48,11 +51,11 @@ function story2video_export() {
         }
 
         // Command to render video using FFmpeg (example)
-        $command = "ffmpeg -i $story_content $resolution_option -c:v libx264 -c:a aac $output_file 2>&1";
+        $command = "$ffmpeg_path -i $story_content $resolution_option -c:v libx264 -c:a aac $output_file 2>&1";
         $output = shell_exec($command);
 
         // Error handling
-        if (strpos($output, 'Error') !== false) {
+        if (strpos($output, 'Error') !== false || !file_exists($output_file)) {
             wp_redirect(admin_url('admin.php?page=story2video&export_error=1'));
             exit;
         } else {

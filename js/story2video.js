@@ -1,6 +1,3 @@
-Here is the complete JavaScript code for the `story2video.js` file:
-
-```javascript
 jQuery(document).ready(function($) {
     // Handle FFmpeg path testing
     $('#test-ffmpeg-path').on('click', function() {
@@ -36,4 +33,3 @@ jQuery(document).ready(function($) {
         }, 500);
     });
 });
-```

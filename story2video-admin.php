@@ -1,36 +1,4 @@
 <?php
-// Add a menu item for the plugin
-add_action('admin_menu', 'story2video_admin_menu');
-
-function story2video_admin_menu() {
-    add_menu_page(
-        'Story2Video',
-        'Story2Video',
-        'manage_options',
-        'story2video',
-        'story2video_admin_page',
-        'dashicons-video-alt3'
-    );
-
-    add_submenu_page(
-        'story2video',
-        'Story2Video Settings',
-        'Settings',
-        'manage_options',
-        'story2video-settings',
-        'story2video_settings_page'
-    );
-
-    add_submenu_page(
-        'story2video',
-        'Reels',
-        'Reels',
-        'manage_options',
-        'story2video-reels',
-        'story2video_reels_page'
-    );
-}
-
 function story2video_admin_page() {
     if (isset($_GET['export_success'])) {
         $output_file = urldecode($_GET['output_file']);
@@ -38,7 +6,8 @@ function story2video_admin_page() {
         $relative_path = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $output_file);
         echo '<div class="notice notice-success is-dismissible"><p>Export successful! <a href="' . esc_url($relative_path) . '" target="_blank">Download Video</a></p></div>';
     } elseif (isset($_GET['export_error'])) {
-        echo '<div class="notice notice-error is-dismissible"><p>Export failed. Please try again.</p></div>';
+        $error_message = urldecode($_GET['error_message']);
+        echo '<div class="notice notice-error is-dismissible"><p>Export failed. Error message: ' . $error_message . '</p></div>';
     }
 
     $stories = get_posts(array('post_type' => 'web-story', 'numberposts' => -1));

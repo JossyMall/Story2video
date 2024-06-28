@@ -11,6 +11,15 @@ function story2video_admin_menu() {
         'story2video_admin_page',
         'dashicons-video-alt3'
     );
+
+    add_submenu_page(
+        'story2video',
+        'Story2Video Settings',
+        'Settings',
+        'manage_options',
+        'story2video-settings',
+        'story2video_settings_page'
+    );
 }
 
 function story2video_admin_page() {

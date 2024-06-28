@@ -20,6 +20,15 @@ function story2video_admin_menu() {
         'story2video-settings',
         'story2video_settings_page'
     );
+
+    add_submenu_page(
+        'story2video',
+        'Reels',
+        'Reels',
+        'manage_options',
+        'story2video-reels',
+        'story2video_reels_page'
+    );
 }
 
 function story2video_admin_page() {

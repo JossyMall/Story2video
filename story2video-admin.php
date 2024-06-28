@@ -15,7 +15,10 @@ function story2video_admin_menu() {
 
 function story2video_admin_page() {
     if (isset($_GET['export_success'])) {
-        echo '<div class="notice notice-success is-dismissible"><p>Export successful!</p></div>';
+        $output_file = urldecode($_GET['output_file']);
+        $uploads_dir = wp_upload_dir();
+        $relative_path = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $output_file);
+        echo '<div class="notice notice-success is-dismissible"><p>Export successful! <a href="' . esc_url($relative_path) . '" target="_blank">Download Video</a></p></div>';
     } elseif (isset($_GET['export_error'])) {
         echo '<div class="notice notice-error is-dismissible"><p>Export failed. Please try again.</p></div>';
     }

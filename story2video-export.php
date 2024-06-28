@@ -20,7 +20,15 @@ function story2video_export() {
         // For example, use FFmpeg to convert the story to video
 
         $story_content = apply_filters('the_content', $story->post_content);
-        $output_file = plugin_dir_path(__FILE__) . "exports/story_$story_id.$format";
+        $uploads_dir = wp_upload_dir();
+        $output_dir = $uploads_dir['basedir'] . '/story2video-exports';
+
+        // Create the output directory if it doesn't exist
+        if (!file_exists($output_dir)) {
+            mkdir($output_dir, 0755, true);
+        }
+
+        $output_file = $output_dir . "/story_$story_id.$format";
 
         // Determine FFmpeg resolution settings
         $resolution_option = '';
@@ -48,7 +56,7 @@ function story2video_export() {
             wp_redirect(admin_url('admin.php?page=story2video&export_error=1'));
             exit;
         } else {
-            wp_redirect(admin_url('admin.php?page=story2video&export_success=1'));
+            wp_redirect(admin_url('admin.php?page=story2video&export_success=1&output_file=' . urlencode($output_file)));
             exit;
         }
     } else {

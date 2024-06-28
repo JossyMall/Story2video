@@ -47,4 +47,96 @@ function story2video_admin_page() {
     </div>
     <?php
 }
+
+function story2video_settings_page() {
+    ?>
+    <div class="wrap">
+        <h1>Story2Video Settings</h1>
+        <form method="post" action="options.php">
+            <?php settings_fields('story2video-settings-group'); ?>
+            <?php do_settings_sections('story2video-settings-group'); ?>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row">FFmpeg Path</th>
+                    <td><input type="text" name="story2video_ffmpeg_path" value="<?php echo esc_attr(get_option('story2video_ffmpeg_path')); ?>" /></td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+        <button id="test-ffmpeg-button" class="button">Test FFmpeg Path</button>
+        <div id="ffmpeg-test-result"></div>
+    </div>
+    <?php
+}
+
+function story2video_register_settings() {
+    register_setting('story2video-settings-group', 'story2video_ffmpeg_path');
+}
+
+add_action('admin_init', 'story2video_register_settings');
+
+function story2video_reels_page() {
+    $upload_dir = wp_upload_dir();
+    $reels_dir = $upload_dir['basedir'] . '/story2video_export';
+    $reels_url = $upload_dir['baseurl'] . '/story2video_export';
+
+    if (!is_dir($reels_dir)) {
+        echo '<p>No converted videos found.</p>';
+        return;
+    }
+
+    $files = scandir($reels_dir);
+    $videos = array_filter($files, function($file) use ($reels_dir) {
+        return is_file($reels_dir . '/' . $file);
+    });
+
+    if (empty($videos)) {
+        echo '<p>No converted videos found.</p>';
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <h1>Reels</h1>
+        <div class="video-gallery">
+            <?php foreach ($videos as $video): ?>
+                <div class="video-item">
+                    <video width="320" height="240" controls>
+                        <source src="<?php echo esc_url($reels_url . '/' . $video); ?>" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p><?php echo esc_html($video); ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php
+}
+
+add_action('admin_menu', 'story2video_admin_menu');
+function story2video_admin_menu() {
+    add_menu_page(
+        'Story2Video Settings', 
+        'Story2Video', 
+        'manage_options', 
+        'story2video-settings', 
+        'story2video_admin_page', 
+        'dashicons-video-alt3'
+    );
+    add_submenu_page(
+        'story2video-settings', 
+        'Settings', 
+        'Settings', 
+        'manage_options', 
+        'story2video-settings', 
+        'story2video_settings_page'
+    );
+    add_submenu_page(
+        'story2video-settings', 
+        'Reels', 
+        'Reels', 
+        'manage_options', 
+        'story2video-reels', 
+        'story2video_reels_page'
+    );
+}
 ?>

@@ -3,7 +3,7 @@
  * Plugin Name: Story2Video
  * Description: Adds functionality to export Google Web Stories to video.
  * Version: 1.3
- * Author: Your Name
+ * Author: Angel Cee
  */
 
 if (!defined('ABSPATH')) {

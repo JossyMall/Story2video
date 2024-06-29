@@ -1,0 +1,28 @@
+.wrap {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.story2video-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.story2video-item {
+    width: 320px;
+}
+
+.story2video-item video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#export-progress {
+    margin-top: 20px;
+}
+
+#ffmpeg-test-result {
+    margin-top: 20px;
+}

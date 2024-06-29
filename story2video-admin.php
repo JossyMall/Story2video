@@ -1,35 +1,4 @@
 <?php
-// Admin page and submenu creation
-function story2video_admin_menu() {
-    add_menu_page(
-        'Story2Video', 
-        'Story2Video', 
-        'manage_options', 
-        'story2video-settings', 
-        'story2video_admin_page', 
-        'dashicons-video-alt3'
-    );
-    add_submenu_page(
-        'story2video-settings', 
-        'Settings', 
-        'Settings', 
-        'manage_options', 
-        'story2video-settings', 
-        'story2video_settings_page'
-    );
-    add_submenu_page(
-        'story2video-settings', 
-        'Reels', 
-        'Reels', 
-        'manage_options', 
-        'story2video-reels', 
-        'story2video_reels_page'
-    );
-}
-
-add_action('admin_menu', 'story2video_admin_menu');
-
-// Main admin page
 function story2video_admin_page() {
     if (isset($_GET['export_success'])) {
         $output_file = urldecode($_GET['output_file']);
@@ -79,7 +48,6 @@ function story2video_admin_page() {
     <?php
 }
 
-// Settings page
 function story2video_settings_page() {
     ?>
     <div class="wrap">
@@ -95,47 +63,34 @@ function story2video_settings_page() {
             </table>
             <?php submit_button(); ?>
         </form>
-        <button id="test-ffmpeg-button" class="button">Test FFmpeg Path</button>
+
+        <button id="test-ffmpeg-button" class="button button-secondary">Test FFmpeg Path</button>
         <div id="ffmpeg-test-result"></div>
     </div>
     <?php
 }
 
-// Register settings
-function story2video_register_settings() {
-    register_setting('story2video-settings-group', 'story2video_ffmpeg_path');
-}
-
-add_action('admin_init', 'story2video_register_settings');
-
-// Reels gallery page
 function story2video_reels_page() {
-    $upload_dir = wp_upload_dir();
-    $reels_dir = $upload_dir['basedir'] . '/story2video_export';
-    $reels_url = $upload_dir['baseurl'] . '/story2video_export';
+    $uploads_dir = wp_upload_dir();
+    $export_dir = $uploads_dir['basedir'] . '/story2video-exports';
+    $export_url = $uploads_dir['baseurl'] . '/story2video-exports';
 
-    if (!is_dir($reels_dir)) {
-        echo '<p>No converted videos found.</p>';
+    if (!file_exists($export_dir)) {
+        echo '<div class="notice notice-warning"><p>No exported videos found.</p></div>';
         return;
     }
 
-    $files = scandir($reels_dir);
-    $videos = array_filter($files, function($file) use ($reels_dir) {
-        return is_file($reels_dir . '/' . $file);
-    });
+    $files = scandir($export_dir);
+    $videos = array_diff($files, array('.', '..'));
 
-    if (empty($videos)) {
-        echo '<p>No converted videos found.</p>';
-        return;
-    }
     ?>
     <div class="wrap">
-        <h1>Reels</h1>
-        <div class="video-gallery">
+        <h1>Exported Videos</h1>
+        <div class="story2video-gallery">
             <?php foreach ($videos as $video): ?>
-                <div class="video-item">
+                <div class="story2video-item">
                     <video width="320" height="240" controls>
-                        <source src="<?php echo esc_url($reels_url . '/' . $video); ?>" type="video/mp4">
+                        <source src="<?php echo esc_url($export_url . '/' . $video); ?>" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                     <p><?php echo esc_html($video); ?></p>
@@ -145,4 +100,16 @@ function story2video_reels_page() {
     </div>
     <?php
 }
+
+function story2video_admin_menu() {
+    add_menu_page('Story2Video', 'Story2Video', 'manage_options', 'story2video', 'story2video_admin_page', 'dashicons-video-alt3');
+    add_submenu_page('story2video', 'Settings', 'Settings', 'manage_options', 'story2video_settings', 'story2video_settings_page');
+    add_submenu_page('story2video', 'Reels', 'Reels', 'manage_options', 'story2video_reels', 'story2video_reels_page');
+}
+add_action('admin_menu', 'story2video_admin_menu');
+
+function story2video_register_settings() {
+    register_setting('story2video-settings-group', 'story2video_ffmpeg_path');
+}
+add_action('admin_init', 'story2video_register_settings');
 ?>

@@ -1,33 +1,28 @@
 <?php
 /*
 Plugin Name: Story2Video
-Description: Add-on for Google Web Stories plugin to export stories as videos.
+Description: Convert Google Web Stories to Video.
 Version: 1.0
-Author: Angel Cee
+Author: Your Name
 */
 
-// Include necessary files
-include_once plugin_dir_path(__FILE__) . 'story2video-admin.php';
-include_once plugin_dir_path(__FILE__) . 'story2video-export.php';
-include_once plugin_dir_path(__FILE__) . 'story2video-settings.php';
-include_once plugin_dir_path(__FILE__) . 'story2video-reels.php';
+function story2video_enqueue_admin_scripts($hook) {
+    if ($hook !== 'toplevel_page_story2video' && $hook !== 'story2video_page_story2video_settings' && $hook !== 'story2video_page_story2video_reels') {
+        return;
+    }
+    wp_enqueue_style('story2video-css', plugin_dir_url(__FILE__) . 'assets/css/story2video.css');
+    wp_enqueue_script('story2video-js', plugin_dir_url(__FILE__) . 'assets/js/story2video.js', array('jquery'), null, true);
+    wp_localize_script('story2video-js', 'story2video_ajax', array('ajax_url' => admin_url('admin-ajax.php')));
+}
+add_action('admin_enqueue_scripts', 'story2video_enqueue_admin_scripts');
 
-// Register activation hook
+require_once plugin_dir_path(__FILE__) . 'story2video-admin.php';
+require_once plugin_dir_path(__FILE__) . 'story2video-ajax.php';
+
 register_activation_hook(__FILE__, 'story2video_activate');
 function story2video_activate() {
-    // Create the export directory if it doesn't exist
-    $upload_dir = wp_upload_dir();
-    $export_dir = $upload_dir['basedir'] . '/story2video_export';
-    if (!file_exists($export_dir)) {
-        wp_mkdir_p($export_dir);
+    if (!file_exists(WP_CONTENT_DIR . '/uploads/story2video-exports')) {
+        mkdir(WP_CONTENT_DIR . '/uploads/story2video-exports', 0755, true);
     }
-}
-
-// Enqueue scripts and styles
-add_action('admin_enqueue_scripts', 'story2video_enqueue_scripts');
-function story2video_enqueue_scripts() {
-    wp_enqueue_script('story2video-js', plugin_dir_url(__FILE__) . 'js/story2video.js', array('jquery'), '1.0', true);
-    wp_localize_script('story2video-js', 'story2video_ajax', array('ajax_url' => admin_url('admin-ajax.php')));
-    wp_enqueue_style('story2video-css', plugin_dir_url(__FILE__) . 'css/story2video.css');
 }
 ?>

@@ -32,5 +32,23 @@ function story2video_export() {
     $command = escapeshellcmd("$ffmpeg_path -i \"$story_url\" -vf scale=-1:$resolution \"$output_file\"");
     exec($command, $output, $return_var);
 
+    if ($return_var !== 0 || !file_exists($output_file)) {
+        wp_redirect(add_query_arg('export_error', urlencode('FFmpeg error: ' . implode("\n", $output)), admin_url('admin.php?page=story2video')));
+    } else {
+        wp_redirect(add_query_arg('export_success', urlencode($output_file), admin_url('admin.php?page=story2video')));
+    }
+    exit;
+}
+
+function story2video_test_ffmpeg() {
+    $ffmpeg_path = get_option('story2video_ffmpeg_path', '/usr/bin/ffmpeg');
+    $command = escapeshellcmd("$ffmpeg_path -version");
+    exec($command, $output, $return_var);
+
     if ($return_var !== 0) {
-        wp_redirect(add_query_arg('export_error', urlencode('FFmpeg error: ' . implode
+        wp_send_json_error(array('message' => 'FFmpeg is not working. Please check the path.'));
+    } else {
+        wp_send_json_success(array('message' => 'FFmpeg is working correctly.'));
+    }
+}
+?>

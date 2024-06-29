@@ -1,4 +1,35 @@
 <?php
+// Admin page and submenu creation
+function story2video_admin_menu() {
+    add_menu_page(
+        'Story2Video', 
+        'Story2Video', 
+        'manage_options', 
+        'story2video-settings', 
+        'story2video_admin_page', 
+        'dashicons-video-alt3'
+    );
+    add_submenu_page(
+        'story2video-settings', 
+        'Settings', 
+        'Settings', 
+        'manage_options', 
+        'story2video-settings', 
+        'story2video_settings_page'
+    );
+    add_submenu_page(
+        'story2video-settings', 
+        'Reels', 
+        'Reels', 
+        'manage_options', 
+        'story2video-reels', 
+        'story2video_reels_page'
+    );
+}
+
+add_action('admin_menu', 'story2video_admin_menu');
+
+// Main admin page
 function story2video_admin_page() {
     if (isset($_GET['export_success'])) {
         $output_file = urldecode($_GET['output_file']);
@@ -48,6 +79,7 @@ function story2video_admin_page() {
     <?php
 }
 
+// Settings page
 function story2video_settings_page() {
     ?>
     <div class="wrap">
@@ -69,12 +101,14 @@ function story2video_settings_page() {
     <?php
 }
 
+// Register settings
 function story2video_register_settings() {
     register_setting('story2video-settings-group', 'story2video_ffmpeg_path');
 }
 
 add_action('admin_init', 'story2video_register_settings');
 
+// Reels gallery page
 function story2video_reels_page() {
     $upload_dir = wp_upload_dir();
     $reels_dir = $upload_dir['basedir'] . '/story2video_export';
@@ -110,33 +144,5 @@ function story2video_reels_page() {
         </div>
     </div>
     <?php
-}
-
-add_action('admin_menu', 'story2video_admin_menu');
-function story2video_admin_menu() {
-    add_menu_page(
-        'Story2Video Settings', 
-        'Story2Video', 
-        'manage_options', 
-        'story2video-settings', 
-        'story2video_admin_page', 
-        'dashicons-video-alt3'
-    );
-    add_submenu_page(
-        'story2video-settings', 
-        'Settings', 
-        'Settings', 
-        'manage_options', 
-        'story2video-settings', 
-        'story2video_settings_page'
-    );
-    add_submenu_page(
-        'story2video-settings', 
-        'Reels', 
-        'Reels', 
-        'manage_options', 
-        'story2video-reels', 
-        'story2video_reels_page'
-    );
 }
 ?>
